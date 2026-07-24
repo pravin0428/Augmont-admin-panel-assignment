@@ -1,0 +1,70 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Full stack: PostgreSQL + Backend API + Frontend (nginx).
+#
+#   docker compose up --build
+#
+# Startup ordering is enforced with a HEALTHCHECK on Postgres + `depends_on:
+# condition: service_healthy`, so the backend only runs migrations once the DB
+# is actually accepting connections (not merely "started").
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pms_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: product_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d product_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: pms_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/product_db?schema=public
+      JWT_SECRET: super-secret-change-me-in-production
+      JWT_EXPIRES_IN: 1d
+      BCRYPT_SALT_ROUNDS: 10
+      CORS_ORIGINS: http://localhost:8080
+      UPLOAD_DIR: uploads
+      MAX_IMAGE_SIZE_BYTES: 2097152
+      BULK_IMPORT_BATCH_SIZE: 500
+      # Set to "true" the first run to seed an admin user + sample data.
+      SEED_ON_START: "false"
+    ports:
+      - "4000:4000"
+    volumes:
+      # Persist uploaded images across container restarts.
+      - uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: pms_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      # Host 8080 → nginx :80. App is reachable at http://localhost:8080
+      - "8080:80"
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,29 @@
+# Dependencies
+**/node_modules/
+
+# Builds
+backend/dist/
+frontend/dist/
+frontend/.angular/
+
+# Env
+**/.env
+**/.env.local
+
+# Logs & runtime
+**/*.log
+backend/logs/
+backend/uploads/
+
+# Coverage
+**/coverage/
+
+# OS
+.DS_Store
+
+# Local-only (not part of the deliverable)
+/INTERVIEW_PREP.md
+/ARCHITECTURE.md
+/sample-files/
+/docs/
+backend/samples/

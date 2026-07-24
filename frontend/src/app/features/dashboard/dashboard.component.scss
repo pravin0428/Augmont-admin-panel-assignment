@@ -1,0 +1,73 @@
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent, #1565c0) 12%, transparent);
+
+    mat-icon {
+      color: var(--accent, #1565c0);
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  &__label {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+  }
+}
+
+// Skeleton loading shimmer.
+.skeleton {
+  min-height: 96px;
+
+  &__line {
+    height: 14px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #eee 25%, #e0e0e0 37%, #eee 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    margin: 0.5rem 0;
+
+    &--sm { width: 40%; }
+    &--lg { width: 70%; height: 28px; }
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}

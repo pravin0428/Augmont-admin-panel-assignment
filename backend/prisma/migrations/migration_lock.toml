@@ -1,0 +1,2 @@
+# This file tracks the migration provider. Do not edit.
+provider = "postgresql"

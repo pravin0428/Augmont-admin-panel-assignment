@@ -1,0 +1,6 @@
+<!-- Global, thin progress bar shown whenever any HTTP request is in flight. -->
+@if (loading.isLoading()) {
+  <mat-progress-bar class="app-loading-bar" mode="indeterminate" />
+}
+
+<router-outlet />

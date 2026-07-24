@@ -1,0 +1,79 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Prisma schema — Product Management System
+//
+// Design decisions (interview talking points):
+//  • Two identifiers per public entity:
+//      - `id`       : auto-increment INT, the internal primary key. Compact,
+//                     fast to index/join, used for FKs.
+//      - `uniqueId` : a UUID exposed to the outside world. WHY expose a UUID
+//                     instead of the sequential int? Sequential ids leak volume
+//                     ("how many products exist?") and are enumerable
+//                     (/products/1,2,3...). A UUID is opaque and safe to expose.
+//  • `price` is Decimal, NOT Float. Floating point cannot represent money
+//    exactly (0.1 + 0.2 !== 0.3). Decimal(12,2) stores exact currency values.
+//  • Soft delete via `deletedAt`. WHY: destructive deletes lose audit history
+//    and can orphan references. We flag rows deleted and filter them out.
+//  • Indexes on the columns the Product list API sorts/filters/searches by,
+//    so those queries stay fast as the table grows.
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String // bcrypt hash — never the plaintext
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft-delete marker; null = active
+
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  uniqueId  String    @unique @default(uuid()) @db.Uuid
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // One Category has many Products.
+  products Product[]
+
+  @@index([deletedAt])
+  @@map("categories")
+}
+
+model Product {
+  id        Int       @id @default(autoincrement())
+  uniqueId  String    @unique @default(uuid()) @db.Uuid
+  name      String
+  image     String? // relative path/URL to the stored image; optional
+  price     Decimal   @db.Decimal(12, 2)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Product belongs to one Category. Restrict deletion of a category that
+  // still has products (enforced at the DB level via the FK).
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  // Indexes tuned for the list API: search by name, filter by category,
+  // sort by price / createdAt, and exclude soft-deleted rows.
+  @@index([categoryId])
+  @@index([name])
+  @@index([price])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("products")
+}

@@ -1,0 +1,7 @@
+// The global loading bar is pinned to the very top of the viewport, above all
+// content, so it never shifts layout while requests are in flight.
+.app-loading-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+}

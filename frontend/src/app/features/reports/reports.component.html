@@ -1,0 +1,60 @@
+<header class="page-header">
+  <h1>Reports</h1>
+  <p>Export a filtered product report as CSV or XLSX.</p>
+</header>
+
+<mat-card appearance="outlined" class="report-card">
+  <mat-card-content>
+    <form [formGroup]="form" class="report-form">
+      <div class="report-form__format">
+        <label>Format</label>
+        <mat-button-toggle-group formControlName="format" aria-label="Report format">
+          <mat-button-toggle value="csv">
+            <mat-icon>description</mat-icon> CSV
+          </mat-button-toggle>
+          <mat-button-toggle value="xlsx">
+            <mat-icon>grid_on</mat-icon> XLSX
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="report-form__filters">
+        <mat-form-field appearance="outline">
+          <mat-label>Search by name</mat-label>
+          <input matInput formControlName="search" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="categoryId">
+            <mat-option [value]="null">All categories</mat-option>
+            @for (category of categories(); track category.id) {
+              <mat-option [value]="category.id">{{ category.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Min price</mat-label>
+          <input matInput type="number" min="0" formControlName="minPrice" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Max price</mat-label>
+          <input matInput type="number" min="0" formControlName="maxPrice" />
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-flat-button color="primary" (click)="download()" [disabled]="downloading()">
+      <mat-icon>download</mat-icon>
+      @if (downloading()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        <span>Download report</span>
+      }
+    </button>
+  </mat-card-actions>
+</mat-card>

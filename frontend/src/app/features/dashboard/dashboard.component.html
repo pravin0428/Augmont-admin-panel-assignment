@@ -1,0 +1,33 @@
+<header class="page-header">
+  <h1>Dashboard</h1>
+  <p>Overview of your catalogue.</p>
+</header>
+
+<div class="stat-grid">
+  @if (loading()) {
+    <!-- Skeleton placeholders keep layout stable while data loads. -->
+    @for (i of [1, 2, 3]; track i) {
+      <mat-card class="stat-card skeleton" appearance="outlined">
+        <div class="skeleton__line skeleton__line--sm"></div>
+        <div class="skeleton__line skeleton__line--lg"></div>
+      </mat-card>
+    }
+  } @else {
+    @for (stat of stats(); track stat.label) {
+      <mat-card
+        class="stat-card"
+        appearance="outlined"
+        [routerLink]="stat.route"
+        [style.--accent]="stat.accent"
+      >
+        <div class="stat-card__icon">
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+        <div class="stat-card__body">
+          <span class="stat-card__value">{{ stat.value }}</span>
+          <span class="stat-card__label">{{ stat.label }}</span>
+        </div>
+      </mat-card>
+    }
+  }
+</div>

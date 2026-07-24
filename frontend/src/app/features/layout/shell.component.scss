@@ -1,0 +1,47 @@
+.shell {
+  height: 100vh;
+
+  &__sidebar {
+    width: 240px;
+    border-right: none;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+
+    mat-icon {
+      color: var(--mat-sys-primary, #1565c0);
+    }
+  }
+
+  &__toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__user-email {
+    margin-left: 0.4rem;
+  }
+
+  &__main {
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+// Hide the email text on very small screens to keep the toolbar tidy.
+@media (max-width: 599px) {
+  .shell__user-email {
+    display: none;
+  }
+}
