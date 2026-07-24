@@ -61,6 +61,10 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      # nginx proxies /api and /uploads to this address (see nginx.conf.template).
+      BACKEND_ORIGIN: backend:4000
+      PORT: "80"
     ports:
       # Host 8080 → nginx :80. App is reachable at http://localhost:8080
       - "8080:80"

@@ -1,15 +1,21 @@
+# nginx config TEMPLATE. The official nginx image runs envsubst on files in
+# /etc/nginx/templates/*.template at startup, substituting ONLY the env vars we
+# define (${PORT}, ${BACKEND_ORIGIN}) — nginx's own $host/$uri/etc. are left intact.
+#
+#   PORT            → the port to listen on (Render injects this; defaults to 80 locally)
+#   BACKEND_ORIGIN  → host:port of the backend API (Render injects the private
+#                     address via fromService; docker-compose sets "backend:4000")
 server {
-  listen 80;
+  listen ${PORT};
   server_name _;
   root /usr/share/nginx/html;
   index index.html;
 
-  # gzip static assets for faster loads.
   gzip on;
   gzip_types text/plain text/css application/javascript application/json image/svg+xml;
   gzip_min_length 1024;
 
-  # Long-cache fingerprinted build assets (they have content hashes in the name).
+  # Long-cache fingerprinted build assets (content-hashed filenames).
   location ~* \.(?:js|css|woff2?|png|jpg|jpeg|gif|svg|ico)$ {
     expires 1y;
     add_header Cache-Control "public, immutable";
@@ -18,7 +24,7 @@ server {
 
   # Reverse-proxy API calls to the backend service (same-origin → no CORS).
   location /api/ {
-    proxy_pass http://backend:4000;
+    proxy_pass http://${BACKEND_ORIGIN};
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -33,11 +39,11 @@ server {
 
   # Serve uploaded product images through the backend.
   location /uploads/ {
-    proxy_pass http://backend:4000;
+    proxy_pass http://${BACKEND_ORIGIN};
     proxy_set_header Host $host;
   }
 
-  # SPA fallback: any unknown path serves index.html so client-side routing works.
+  # SPA fallback: unknown paths serve index.html so client-side routing works.
   location / {
     try_files $uri $uri/ /index.html;
   }

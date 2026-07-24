@@ -31,6 +31,18 @@ assign/
 
 ---
 
+## Deploy on Render
+
+The repo includes a [`render.yaml`](./render.yaml) Blueprint that provisions the
+full stack (PostgreSQL + Dockerized backend + Dockerized frontend). In the Render
+dashboard: **New → Blueprint → select this repo → Apply**. `DATABASE_URL` and
+`JWT_SECRET` are wired automatically; the frontend's nginx reverse-proxies `/api`
+to the backend over Render's private network, so the app is same-origin. After
+the first deploy, open the frontend URL and create an account via **Create one**
+on the login screen.
+
+---
+
 ## Quick start — Docker (recommended)
 
 The only prerequisite is Docker. One command builds and runs Postgres + API + UI:
