@@ -140,6 +140,26 @@ The service tests use in-memory fake repositories to demonstrate the dependency-
 
 ---
 
+## Screenshots
+
+| Login | Dashboard |
+|-------|-----------|
+| ![Login](docs/screenshots/login.png) | ![Dashboard](docs/screenshots/dashboard.png) |
+
+| Products | Categories |
+|----------|------------|
+| ![Products](docs/screenshots/products.png) | ![Categories](docs/screenshots/categories.png) |
+
+| Users | Bulk Upload |
+|-------|-------------|
+| ![Users](docs/screenshots/users.png) | ![Bulk Upload](docs/screenshots/bulk-upload.png) |
+
+| Reports | Register |
+|---------|----------|
+| ![Reports](docs/screenshots/reports.png) | ![Register](docs/screenshots/register.png) |
+
+---
+
 ## Documentation
 
 - [backend/README.md](./backend/README.md) — backend details, scripts, folder structure.
