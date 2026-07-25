@@ -55,19 +55,19 @@ services:
         value: https://augmont-frontend.onrender.com
       # PORT is provided by Render automatically; the server binds to it.
 
-  # ── Frontend (Angular built + served by nginx) ─────────────────────────────
+  # ── Frontend (Angular SPA served as a static site from Render's CDN) ────────
+  # WHY static (not a container): it's Render's recommended way to host an SPA —
+  # the build runs on Render's builder (no in-container Angular OOM) and there's
+  # no nginx/private-DNS to fail. It calls the backend's PUBLIC URL with CORS
+  # (see environment.render.ts + the backend's CORS_ORIGINS above).
   - name: augmont-frontend
     type: web
-    runtime: docker
-    plan: free
-    region: oregon
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
-    envVars:
-      # Inject the backend's private "host:port" so nginx can proxy to it.
-      - key: BACKEND_ORIGIN
-        fromService:
-          name: augmont-backend
-          type: web
-          property: hostport
-      # PORT is provided by Render automatically; nginx listens on it.
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build -- --configuration render
+    staticPublishPath: dist/frontend/browser
+    # SPA fallback: unmatched paths serve index.html (existing files served first).
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
