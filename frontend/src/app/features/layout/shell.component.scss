@@ -4,6 +4,22 @@
   &__sidebar {
     width: 240px;
     border-right: none;
+
+    // Space the nav items apart so the hover/active highlight of one item never
+    // touches its neighbours. The list becomes a simple vertical stack with a gap.
+    mat-nav-list {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    // Turn each item into an inset, rounded "pill". `overflow: hidden` clips the
+    // Material hover/active state layer to the rounded corners so it looks tidy.
+    a[mat-list-item] {
+      border-radius: 10px;
+      overflow: hidden;
+    }
   }
 
   &__brand {
